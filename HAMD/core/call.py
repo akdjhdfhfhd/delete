@@ -1,12 +1,4 @@
-#
-# Copyright (C) 2021-2022 by TeamYukki@Github, < https://github.com/TeamYukki >.
-#
-# This file is part of < https://github.com/TeamYukki/YukkiMusicBot > project,
-# and is released under the "GNU v3.0 License Agreement".
-# Please see < https://github.com/TeamYukki/YukkiMusicBot/blob/master/LICENSE >
-#
-# All rights reserved.
-
+import os
 import asyncio
 from datetime import datetime, timedelta
 from typing import Union
@@ -15,39 +7,38 @@ from pyrogram import Client
 from pyrogram.errors import (ChatAdminRequired,
                              UserAlreadyParticipant,
                              UserNotParticipant)
-from pyrogram.types import InlineKeyboardMarkup
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pytgcalls import PyTgCalls, StreamType
 from pytgcalls.exceptions import (AlreadyJoinedError,
                                   NoActiveGroupCall,
                                   TelegramServerError)
 from pytgcalls.types import (JoinedGroupCallParticipant,
                              LeftGroupCallParticipant, Update)
-from pytgcalls.types.input_stream import AudioPiped, AudioVideoPiped
+from pytgcalls.types.input_stream import AudioImagePiped, AudioPiped, AudioVideoPiped
 from pytgcalls.types.stream import StreamAudioEnded
 
 import config
 from strings import get_string
-from YukkiMusic import LOGGER, YouTube, app
-from YukkiMusic.misc import db
-from YukkiMusic.utils.database import (add_active_chat,
+from AnonX import LOGGER, YouTube, app
+from AnonX.misc import db
+from AnonX.utils.database import (add_active_chat,
                                        add_active_video_chat,
                                        get_assistant,
                                        get_audio_bitrate, get_lang,
                                        get_loop, get_video_bitrate,
                                        group_assistant, is_autoend,
-                                       music_on, mute_off,
+                                       music_on, set_loop,
                                        remove_active_chat,
-                                       remove_active_video_chat,
-                                       set_loop)
-from YukkiMusic.utils.exceptions import AssistantErr
-from YukkiMusic.utils.inline.play import (stream_markup,
+                                       remove_active_video_chat)
+from AnonX.utils.exceptions import AssistantErr
+from AnonX.utils.inline.play import (stream_markup,
                                           telegram_markup)
-from YukkiMusic.utils.stream.autoclear import auto_clean
-from YukkiMusic.utils.thumbnails import gen_thumb
+from AnonX.utils.stream.autoclear import auto_clean
+from AnonX.utils.thumbnails import gen_thumb
 
 autoend = {}
 counter = {}
-AUTO_END_TIME = 3
+AUTO_END_TIME = 2
 
 
 async def _clear_(chat_id):
