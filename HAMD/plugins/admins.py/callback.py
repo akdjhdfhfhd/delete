@@ -1,31 +1,43 @@
+import os
 import random
+import asyncio
 
 from pyrogram import filters
-from pyrogram.types import CallbackQuery, InlineKeyboardMarkup
+from pyrogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 
+from strings import get_string
 from config import (AUTO_DOWNLOADS_CLEAR, BANNED_USERS,
                     SOUNCLOUD_IMG_URL, STREAM_IMG_URL,
-                    TELEGRAM_AUDIO_URL, TELEGRAM_VIDEO_URL, adminlist)
-from YukkiMusic import YouTube, app
-from YukkiMusic.core.call import Yukki
-from YukkiMusic.misc import SUDOERS, db
-from YukkiMusic.utils.database import (is_active_chat,
-                                       is_music_playing, is_muted,
-                                       is_nonadmin_chat, music_off,
-                                       music_on, mute_off, mute_on,
-                                       set_loop)
-from YukkiMusic.utils.decorators.language import languageCB
-from YukkiMusic.utils.formatters import seconds_to_min
-from YukkiMusic.utils.inline.play import (panel_markup_1,
-                                          panel_markup_2,
-                                          panel_markup_3,
-                                          stream_markup,
-                                          telegram_markup)
-from YukkiMusic.utils.stream.autoclear import auto_clean
-from YukkiMusic.utils.thumbnails import gen_thumb
+                    TELEGRAM_AUDIO_URL, TELEGRAM_VIDEO_URL,
+                    MUSIC_BOT_NAME, adminlist)
+from AnonX import YouTube, app
+from AnonX.core.call import Anon
+from AnonX.misc import SUDOERS, db
+from AnonX.utils import bot_sys_stats
+from AnonX.utils.database import (
+    get_active_chats,
+    get_lang,
+    is_active_chat,
+    is_music_playing,
+    is_nonadmin_chat,
+    music_off,
+    music_on,
+    set_loop,
+)
+from AnonX.utils.decorators.language import languageCB
+from AnonX.utils.formatters import seconds_to_min
+from AnonX.utils.inline import (
+    stream_markup,
+    stream_markup_timer,
+    telegram_markup,
+    telegram_markup_timer,
+    close_keyboard,
+)
+from AnonX.utils.stream.autoclear import auto_clean
+from AnonX.utils.thumbnails import gen_thumb
 
 wrong = {}
-
+checker = {}
 
 @app.on_callback_query(filters.regex("PanelMarkup") & ~BANNED_USERS)
 @languageCB
@@ -139,7 +151,7 @@ async def del_back_playlist(client, CallbackQuery, _):
             )
         await CallbackQuery.answer()
         await music_off(chat_id)
-        await Yukki.pause_stream(chat_id)
+        await  Anon.pause_stream(chat_id)
         await CallbackQuery.message.reply_text(
             _["admin_2"].format(mention)
         )
@@ -150,13 +162,13 @@ async def del_back_playlist(client, CallbackQuery, _):
             )
         await CallbackQuery.answer()
         await music_on(chat_id)
-        await Yukki.resume_stream(chat_id)
+        await Anon.resume_stream(chat_id)
         await CallbackQuery.message.reply_text(
             _["admin_4"].format(mention)
         )
     elif command == "Stop" or command == "End":
         await CallbackQuery.answer()
-        await Yukki.stop_stream(chat_id)
+        await Anon.stop_stream(chat_id)
         await set_loop(chat_id, 0)
         await CallbackQuery.message.reply_text(
             _["admin_9"].format(mention)
@@ -168,7 +180,7 @@ async def del_back_playlist(client, CallbackQuery, _):
             )
         await CallbackQuery.answer()
         await mute_on(chat_id)
-        await Yukki.mute_stream(chat_id)
+        await Anon.mute_stream(chat_id)
         await CallbackQuery.message.reply_text(
             _["admin_6"].format(mention)
         )
@@ -179,7 +191,7 @@ async def del_back_playlist(client, CallbackQuery, _):
             )
         await CallbackQuery.answer()
         await mute_off(chat_id)
-        await Yukki.unmute_stream(chat_id)
+        await Anon.unmute_stream(chat_id)
         await CallbackQuery.message.reply_text(
             _["admin_8"].format(mention)
         )
@@ -230,7 +242,7 @@ async def del_back_playlist(client, CallbackQuery, _):
                     _["admin_10"].format(mention)
                 )
                 try:
-                    return await Yukki.stop_stream(chat_id)
+                    return await Anon.stop_stream(chat_id)
                 except:
                     return
         except:
@@ -241,7 +253,7 @@ async def del_back_playlist(client, CallbackQuery, _):
                 await CallbackQuery.message.reply_text(
                     _["admin_10"].format(mention)
                 )
-                return await Yukki.stop_stream(chat_id)
+                return await Anon.stop_stream(chat_id)
             except:
                 return
         await CallbackQuery.answer()
@@ -259,7 +271,7 @@ async def del_back_playlist(client, CallbackQuery, _):
                     _["admin_11"].format(title)
                 )
             try:
-                await Yukki.skip_stream(chat_id, link, video=status)
+                await Anon.skip_stream(chat_id, link, video=status)
             except Exception:
                 return await CallbackQuery.message.reply_text(
                     _["call_9"]
@@ -291,7 +303,7 @@ async def del_back_playlist(client, CallbackQuery, _):
             except:
                 return await mystic.edit_text(_["call_9"])
             try:
-                await Yukki.skip_stream(
+                await Anon.skip_stream(
                     chat_id, file_path, video=status
                 )
             except Exception:
@@ -312,7 +324,7 @@ async def del_back_playlist(client, CallbackQuery, _):
             await mystic.delete()
         elif "index_" in queued:
             try:
-                await Yukki.skip_stream(
+                await Anon.skip_stream(
                     chat_id, videoid, video=status
                 )
             except Exception:
@@ -330,7 +342,7 @@ async def del_back_playlist(client, CallbackQuery, _):
             await CallbackQuery.edit_message_text(txt)
         else:
             try:
-                await Yukki.skip_stream(chat_id, queued, video=status)
+                await Anon.skip_stream(chat_id, queued, video=status)
             except Exception:
                 return await CallbackQuery.message.reply_text(
                     _["call_9"]
@@ -425,7 +437,7 @@ async def del_back_playlist(client, CallbackQuery, _):
             if n == 0:
                 return await mystic.edit_text(_["admin_30"])
         try:
-            await Yukki.seek_stream(
+            await Anon.seek_stream(
                 chat_id,
                 file_path,
                 seconds_to_min(to_seek),
