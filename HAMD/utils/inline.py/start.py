@@ -1,22 +1,9 @@
-import asyncio
-import re
-import os
-import random
-import requests
-from pyrogram import Client, filters
-from pyrogram.types import (
-    CallbackQuery,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    ReplyKeyboardMarkup,
-    ReplyKeyboardRemove,
-    InputMediaPhoto,
-    Message,
-)
 from typing import Union
-from config import GITHUB_REPO, SUPPORT_CHANNEL, SUPPORT_GROUP
-from YukkiMusic import app
-from strings.filters import command
+
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
+import config
+
 
 def start_pannel(_):
     buttons = [
