@@ -10,7 +10,7 @@ from typing import Union
 from pyrogram.types import InlineKeyboardButton
 from config import LOG, LOG_GROUP_ID
 from AnonX import app
-from YukkiMusic.utils.database import is_on_off
+from AnonX.utils.database import is_on_off
 from config import GITHUB_REPO, SUPPORT_CHANNEL, SUPPORT_GROUP
 from AnonX import app
 from config import BANNED_USERS, MUSIC_BOT_NAME
