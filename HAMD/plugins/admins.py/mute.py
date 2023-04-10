@@ -5,8 +5,9 @@ from config import BANNED_USERS
 from strings import get_command
 from AnonX import app
 from AnonX.core.call import Anon
-from AnonX.utils.database import is_muted, mute_on
+from AnonX.utils.database import is_music_playing, music_off
 from AnonX.utils.decorators import AdminRightsCheck
+from AnonX.utils.inline.play import close_keyboard
 
 # Commands
 MUTE_COMMAND = get_command("MUTE_COMMAND")
