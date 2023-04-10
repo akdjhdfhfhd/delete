@@ -1,13 +1,5 @@
-#
-# Copyright (C) 2021-2022 by TeamYukki@Github, < https://github.com/TeamYukki >.
-#
-# This file is part of < https://github.com/TeamYukki/YukkiMusicBot > project,
-# and is released under the "GNU v3.0 License Agreement".
-# Please see < https://github.com/TeamYukki/YukkiMusicBot/blob/master/LICENSE >
-#
-# All rights reserved.
-
 import asyncio
+import time
 
 from pyrogram import filters
 from pyrogram.types import (InlineKeyboardButton,
@@ -16,20 +8,23 @@ from youtubesearchpython.__future__ import VideosSearch
 
 import config
 from config import BANNED_USERS
-from config.config import OWNER_ID
+from config import OWNER_ID
 from strings import get_command, get_string
-from YukkiMusic import Telegram, YouTube, app
-from YukkiMusic.misc import SUDOERS
-from YukkiMusic.plugins.play.playlist import del_plist_msg
-from YukkiMusic.plugins.sudo.sudoers import sudoers_list
-from YukkiMusic.utils.database import (add_served_chat,
+from AnonX import Telegram, YouTube, app
+from AnonX.misc import SUDOERS, _boot_
+from AnonX.plugins.playlist import del_plist_msg
+from AnonX.plugins.sudoers import sudoers_list
+from AnonX.utils.database import (add_served_chat,
                                        add_served_user,
+                                       get_served_chats,
+                                       get_served_users,
                                        blacklisted_chats,
                                        get_assistant, get_lang,
                                        get_userss, is_on_off,
                                        is_served_private_chat)
-from YukkiMusic.utils.decorators.language import LanguageStart
-from YukkiMusic.utils.inline import (help_pannel, private_panel,
+from AnonX.utils.decorators.language import LanguageStart
+from AnonX.utils.formatters import get_readable_time
+from AnonX.utils.inline import (help_pannel, private_panel,
                                      start_pannel)
 
 loop = asyncio.get_running_loop()
