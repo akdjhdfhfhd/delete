@@ -1,27 +1,26 @@
-from __future__ import unicode_literals
-
 import os
+import re
 
-import requests
-import wget
 import yt_dlp
-from strings.filters import command
-from pyrogram import Client, filters
-from YukkiMusic import app
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from youtube_search import YoutubeSearch
-from yt_dlp import YoutubeDL
+from pykeyboard import InlineKeyboard
+from pyrogram import filters
+from pyrogram.types import (InlineKeyboardButton,
+                            InlineKeyboardMarkup, InputMediaAudio,
+                            InputMediaVideo, Message)
+
+from config import (BANNED_USERS, SONG_DOWNLOAD_DURATION,
+                    SONG_DOWNLOAD_DURATION_LIMIT)
+from strings import get_command
+from AnonX import YouTube, app
+from AnonX.utils.decorators.language import language, languageCB
+from AnonX.utils.formatters import convert_bytes
+from AnonX.utils.inline.song import song_markup
+
+# Command
+SONG_COMMAND = get_command("SONG_COMMAND")
 
 
-ydl_opts = {
-    "format": "best",
-    "keepvideo": True,
-    "prefer_ffmpeg": False,
-    "geo_bypass": True,
-    "outtmpl": "%(title)s.%(ext)s",
-    "quite": True,
-}
-
+# Song Module
 
 
 @app.on_message(command(["بحث","يوت","تحميل صوت","yt"]) & ~filters.edited)
